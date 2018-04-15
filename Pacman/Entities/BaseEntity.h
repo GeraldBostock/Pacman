@@ -11,7 +11,7 @@ public:
 	BaseEntity();
 	~BaseEntity();
 
-	void init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames);
+	void init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float m_scale);
 	void loadMedia(std::string texturePath, SDL_Renderer* renderer);
 	void draw(SDL_Renderer* renderer);
 	void update();
@@ -29,6 +29,7 @@ protected:
 	int m_spriteWidth;
 	int m_spriteHeight;
 	double m_rotation;
+	float m_scale;
 	directions m_direction;
 
 	float m_timeBetweenAnimFrames;

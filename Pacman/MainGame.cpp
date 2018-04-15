@@ -59,7 +59,9 @@ void MainGame::init()
 		}
 	}
 
-	m_pacman.init(50, 50, "pacman.png", m_renderer, 4, 0.005f);
+	m_pacman.init(50, 50, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
+	m_ghost2.init(400, 400, "ghost2.png", m_renderer, 4, 0.03f, 1.2f);
+	m_ghost.init(200, 200, "ghost.png", m_renderer, 4, 0.03f, 1.2f);
 }
 
 void MainGame::run()
@@ -86,6 +88,8 @@ void MainGame::draw()
 
 	//Rendering goes here
 	m_pacman.draw(m_renderer);
+	m_ghost.draw(m_renderer);
+	m_ghost2.draw(m_renderer);
 
 	SDL_RenderPresent(m_renderer);
 }

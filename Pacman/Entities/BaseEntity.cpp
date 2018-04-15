@@ -13,20 +13,21 @@ BaseEntity::~BaseEntity()
 {
 }
 
-void BaseEntity::init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames)
+void BaseEntity::init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
 {
 	m_posX = x;
 	m_posY = y;
 	m_animFrameNum = animFrames;
 	m_currentAnimFrame = 0;
 	m_timeBetweenAnimFrames = timeBetweenFrames;
+	m_scale = scale;
 	loadMedia(texturePath, renderer);
 	m_frameTimer.start();
 }
 
 void BaseEntity::loadMedia(std::string texturePath, SDL_Renderer* renderer)
 {
-	m_texture.loadFromFile(texturePath, renderer, 0.25f);
+	m_texture.loadFromFile(texturePath, renderer, m_scale);
 	m_spriteWidth = m_texture.getWidth() / m_animFrameNum;
 	m_spriteHeight = m_texture.getHeight();
 

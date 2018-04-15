@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 
 #include "Entities\Pacman.h"
+#include "Ghost.h"
 
 class MainGame
 {
@@ -25,6 +26,8 @@ private:
 	bool m_running;
 
 	Pacman m_pacman;
+	Ghost m_ghost;
+	Ghost m_ghost2;
 
 	SDL_Event m_e;
 	SDL_Window* m_window;
