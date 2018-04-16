@@ -4,8 +4,9 @@
 
 BaseEntity::BaseEntity()
 {
-	m_speed = 3;
+	m_speed = 4;
 	m_rotation = 0.0;
+	m_direction = RIGHT;
 }
 
 
@@ -78,4 +79,9 @@ int BaseEntity::getSpriteWidth()
 int BaseEntity::getSpriteHeight()
 {
 	return m_spriteHeight;
+}
+
+void BaseEntity::setCanMove(bool canMove)
+{
+	m_canMove = canMove;
 }

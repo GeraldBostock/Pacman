@@ -7,6 +7,8 @@ MainGame::MainGame()
 	m_title = "Pacman";
 	m_windowWidth = 1280;
 	m_windowHeight = 780;
+	m_debugMode = false;
+	ghostNum = 20;
 }
 
 MainGame::MainGame(std::string title, int width, int height)
@@ -14,6 +16,8 @@ MainGame::MainGame(std::string title, int width, int height)
 	m_title = title;
 	m_windowWidth = width;
 	m_windowHeight = height;
+	m_debugMode = false;
+	ghostNum = 20;
 }
 
 
@@ -23,6 +27,8 @@ MainGame::~MainGame()
 
 void MainGame::init()
 {
+	srand(time(NULL));
+
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		printf("Failed to initialize SDL. SDL Error: %s\n", SDL_GetError());
@@ -42,6 +48,8 @@ void MainGame::init()
 			}
 			else
 			{
+				SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_BLEND);
+
 				//Nearest pixel sampling.
 				SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 0);
 
@@ -59,26 +67,29 @@ void MainGame::init()
 		}
 	}
 
-	m_fire2.init(30, 30, "fire.png", m_renderer, 4, 0.03f, 0.20f);
-	m_ghost.init(60, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost2.init(90, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost3.init(120, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost4.init(150, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost5.init(180, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost6.init(210, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_ghost7.init(240, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
-	m_fire.init(270, 30, "fire.png", m_renderer, 4, 0.03f, 0.20f);
+	for (int i = 0; i < ghostNum; i++)
+	{
+		Ghost ghost;
+		int x = 4;
+		int y = 4;
+		int offsetX = rand() % 30;
+		int offsetY = rand() % 18;
 
-	m_ghost2.initColors(255, 0, 0);
-	m_ghost3.initColors(0, 255, 0);
-	m_ghost4.initColors(0, 0, 255);
-	m_ghost5.initColors(150, 150, 0);
-	m_ghost6.initColors(0, 150, 0);
-	m_ghost7.initColors(50, 100, 150);
+		x += offsetX * 40;
+		y += offsetY * 40;
 
-	m_pacman.init(50, 400, "pacman.png", m_renderer, 4, 0.005f, 0.20f);
+		ghost.init(x, y, "ghost2.png", m_renderer, 4, 0.03f, 0.25f);
+		ghost.initColors(rand() % 255, rand() % 255, rand() % 255);
+		m_ghosts.push_back(ghost);
+	}
+
+	m_pacman.init(4, 4, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
 
 	m_board.init(m_windowWidth, m_windowHeight, m_renderer);
+	m_tileWidth = m_board.getTileWidth();
+	m_tileHeight = m_board.getTileHeight();
+
+	m_debug.init(m_renderer, m_windowWidth, m_windowHeight);
 }
 
 void MainGame::run()
@@ -87,16 +98,26 @@ void MainGame::run()
 
 	while (m_running)
 	{
+
 		while(SDL_PollEvent(&m_e) != 0)
 		{
 			if (m_e.type == SDL_QUIT) m_running = false;
-			m_pacman.handleInput(m_e);
+			else if (m_e.type == SDL_KEYUP && m_e.key.keysym.sym == SDLK_QUOTEDBL) m_debugMode = !m_debugMode;
+			m_pacman.handleInput(m_e, m_board.isInCenterOfTile(&m_pacman));
 		}
 
 		draw();
 
-		m_pacman.update(m_windowWidth, m_windowHeight);
-		m_board.update(m_pacman.getPosX(), m_pacman.getPosY(), m_pacman.getSpriteWidth(), m_pacman.getSpriteHeight(), m_renderer);
+		m_board.prepare();
+
+		for (int i = 0; i < ghostNum; i++)
+		{
+			m_ghosts.at(i).update(m_windowWidth, m_windowHeight, m_board.isInCenterOfTile(&m_ghosts.at(i)));
+			m_board.updateGhost(m_ghosts.at(i).getPosX(), m_ghosts.at(i).getPosY(), m_ghosts.at(i).getSpriteWidth(), m_ghosts.at(i).getSpriteHeight(), m_renderer);
+		}
+
+		m_board.updatePacman(&m_pacman, m_renderer);
+		m_pacman.update(m_windowWidth, m_windowHeight, m_tileWidth, m_tileHeight, m_board.isInCenterOfTile(&m_pacman));
 	}
 }
 
@@ -106,17 +127,14 @@ void MainGame::draw()
 	SDL_RenderClear(m_renderer);
 
 	//Rendering goes here
-	m_board.draw(m_renderer);
-	m_ghost.draw(m_renderer);
-	m_ghost2.draw(m_renderer);
-	m_ghost3.draw(m_renderer);
-	m_ghost4.draw(m_renderer);
-	m_ghost5.draw(m_renderer);
-	m_ghost6.draw(m_renderer);
-	m_ghost7.draw(m_renderer);
-	m_fire.draw(m_renderer);
-	m_fire2.draw(m_renderer);
+	m_board.draw(m_renderer, m_debugMode);
+	for (int i = 0; i < ghostNum; i++)
+	{
+		m_ghosts.at(i).draw(m_renderer);
+	}
 	m_pacman.draw(m_renderer);
+
+	if (m_debugMode) m_debug.draw(m_renderer, m_windowWidth, m_windowHeight, m_pacman.getPosX(), m_pacman.getPosY(), m_board.getAppleCount());
 
 	SDL_RenderPresent(m_renderer);
 }

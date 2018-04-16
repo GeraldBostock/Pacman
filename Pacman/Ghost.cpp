@@ -7,6 +7,8 @@ Ghost::Ghost()
 	m_r = 255;
 	m_g = 255;
 	m_b = 255;
+	m_directionTimer.start();
+	m_timeBetweenDirectionChanges = rand() % 4 + 1;
 }
 
 
@@ -34,4 +36,47 @@ void Ghost::initColors(Uint32 r, Uint32 g, Uint32 b)
 	m_r = r;
 	m_g = g;
 	m_b = b;
+}
+
+void Ghost::update(int screenWidth, int screenHeight, bool canMove)
+{
+	if (m_directionTimer.getTicks() / 1000.f > 1)
+	{
+		directions direction = static_cast<directions>(rand() % OTHER);
+		if (canMove)
+		{
+			m_direction = direction;
+		}
+		else if (!canMove) m_nextDirection = direction;
+		m_directionTimer.start();
+	}
+
+	if (canMove && m_nextDirection != OTHER)
+	{
+		m_direction = m_nextDirection;
+		m_nextDirection = OTHER;
+	}
+
+	switch (m_direction)
+	{
+	case RIGHT:
+		m_posX += m_speed;
+		break;
+	case LEFT:
+		m_posX -= m_speed;
+		break;
+	case DOWN:
+		m_posY += m_speed;
+		break;
+	case UP:
+		m_posY -= m_speed;
+		break;
+	default:
+		break;
+	}
+
+	if (m_posX + m_spriteWidth < 0) m_posX = screenWidth;
+	else if (m_posX > screenWidth) m_posX = -m_spriteWidth;
+	else if (m_posY + 64 < 0) m_posY = screenHeight;
+	else if (m_posY > screenHeight) m_posY = -m_spriteHeight;
 }

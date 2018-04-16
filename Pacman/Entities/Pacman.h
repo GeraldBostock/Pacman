@@ -11,8 +11,8 @@ public:
 	Pacman();
 	~Pacman();
 
-	void handleInput(SDL_Event e);
-	void update(int screenWidth, int screenHeight);
+	void handleInput(SDL_Event e, bool canMove);
+	void update(int screenWidth, int screenHeight, int tileWidth, int tileHeight, bool canMove);
 
 private:
 	float m_rotationAngle;

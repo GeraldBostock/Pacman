@@ -22,6 +22,8 @@ public:
 	int getSpriteWidth();
 	int getSpriteHeight();
 
+	void setCanMove(bool canMove);
+
 protected:
 	Texture m_texture;
 	Timer m_frameTimer;
@@ -37,6 +39,8 @@ protected:
 	double m_rotation;
 	float m_scale;
 	directions m_direction;
+	directions m_nextDirection;
+	bool m_canMove;
 
 	float m_timeBetweenAnimFrames;
 

@@ -4,7 +4,7 @@
 
 Pacman::Pacman()
 {
-	m_direction = RIGHT;
+	m_direction = OTHER;
 	m_rotationAngle = 0.0;
 }
 
@@ -13,14 +13,21 @@ Pacman::~Pacman()
 {
 }
 
-void Pacman::handleInput(SDL_Event e)
+void Pacman::handleInput(SDL_Event e, bool canMove)
 {
 	directions input = m_input.getInput(e);
-	if(input != OTHER) m_direction = m_input.getInput(e);
+	if (input != OTHER && canMove) m_direction = input;
+	else if (input != OTHER && !canMove) m_nextDirection = input;
 }
 
-void Pacman::update(int screenWidth, int screenHeight)
+void Pacman::update(int screenWidth, int screenHeight, int tileWidth, int tileHeight, bool canMove)
 {
+	if (canMove && m_nextDirection != OTHER)
+	{
+		m_direction = m_nextDirection;
+		m_nextDirection = OTHER;
+	}
+
 	switch (m_direction)
 	{
 	case RIGHT:
@@ -29,7 +36,7 @@ void Pacman::update(int screenWidth, int screenHeight)
 		break;
 	case LEFT:
 		m_posX -= m_speed;
-		m_rotation = 180.;
+		m_rotation = 180.0;
 		break;
 	case DOWN:
 		m_posY += m_speed;

@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
 #include <stdio.h>
+#include <vector>
+#include <stdlib.h>
+#include <time.h>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -8,6 +11,7 @@
 #include "Entities\Pacman.h"
 #include "Ghost.h"
 #include "Board.h"
+#include "Debug.h"
 
 class MainGame
 {
@@ -25,18 +29,16 @@ private:
 	int m_windowWidth;
 	int m_windowHeight;
 	bool m_running;
+	bool m_debugMode;
+	int ghostNum;
+	int m_tileWidth;
+	int m_tileHeight;
+
+	std::vector<Ghost> m_ghosts;
 
 	Pacman m_pacman;
-	Ghost m_ghost;
-	Ghost m_ghost2;
-	Ghost m_ghost3;
-	Ghost m_ghost4;
-	Ghost m_ghost5;
-	Ghost m_ghost6;
-	Ghost m_ghost7;
-	Ghost m_fire;
-	Ghost m_fire2;
 	Board m_board;
+	Debug m_debug;
 
 	SDL_Event m_e;
 	SDL_Window* m_window;
