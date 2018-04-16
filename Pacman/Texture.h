@@ -12,6 +12,7 @@ public:
 	bool loadFromFile(std::string filePath, SDL_Renderer* renderer, float scale);
 	void free();
 	void draw(int x, int y, SDL_Renderer* renderer, SDL_Rect* clip, double angle);
+	void setColor(Uint32 r, Uint32 g, Uint32 b);
 
 	int getWidth();
 	int getHeight();

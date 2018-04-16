@@ -59,9 +59,26 @@ void MainGame::init()
 		}
 	}
 
-	m_pacman.init(50, 50, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
-	m_ghost2.init(400, 400, "ghost2.png", m_renderer, 4, 0.03f, 1.2f);
-	m_ghost.init(200, 200, "ghost.png", m_renderer, 4, 0.03f, 1.2f);
+	m_fire2.init(30, 30, "fire.png", m_renderer, 4, 0.03f, 0.20f);
+	m_ghost.init(60, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost2.init(90, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost3.init(120, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost4.init(150, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost5.init(180, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost6.init(210, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_ghost7.init(240, 30, "ghost.png", m_renderer, 4, 0.03f, 0.25f);
+	m_fire.init(270, 30, "fire.png", m_renderer, 4, 0.03f, 0.20f);
+
+	m_ghost2.initColors(255, 0, 0);
+	m_ghost3.initColors(0, 255, 0);
+	m_ghost4.initColors(0, 0, 255);
+	m_ghost5.initColors(150, 150, 0);
+	m_ghost6.initColors(0, 150, 0);
+	m_ghost7.initColors(50, 100, 150);
+
+	m_pacman.init(50, 400, "pacman.png", m_renderer, 4, 0.005f, 0.20f);
+
+	m_board.init(m_windowWidth, m_windowHeight, m_renderer);
 }
 
 void MainGame::run()
@@ -77,7 +94,9 @@ void MainGame::run()
 		}
 
 		draw();
+
 		m_pacman.update(m_windowWidth, m_windowHeight);
+		m_board.update(m_pacman.getPosX(), m_pacman.getPosY(), m_pacman.getSpriteWidth(), m_pacman.getSpriteHeight(), m_renderer);
 	}
 }
 
@@ -87,9 +106,17 @@ void MainGame::draw()
 	SDL_RenderClear(m_renderer);
 
 	//Rendering goes here
-	m_pacman.draw(m_renderer);
+	m_board.draw(m_renderer);
 	m_ghost.draw(m_renderer);
 	m_ghost2.draw(m_renderer);
+	m_ghost3.draw(m_renderer);
+	m_ghost4.draw(m_renderer);
+	m_ghost5.draw(m_renderer);
+	m_ghost6.draw(m_renderer);
+	m_ghost7.draw(m_renderer);
+	m_fire.draw(m_renderer);
+	m_fire2.draw(m_renderer);
+	m_pacman.draw(m_renderer);
 
 	SDL_RenderPresent(m_renderer);
 }

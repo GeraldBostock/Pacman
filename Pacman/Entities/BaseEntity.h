@@ -16,6 +16,12 @@ public:
 	void draw(SDL_Renderer* renderer);
 	void update();
 
+	int getPosX();
+	int getPosY();
+
+	int getSpriteWidth();
+	int getSpriteHeight();
+
 protected:
 	Texture m_texture;
 	Timer m_frameTimer;

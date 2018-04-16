@@ -73,6 +73,11 @@ void Texture::free()
 	}
 }
 
+void Texture::setColor(Uint32 r, Uint32 g, Uint32 b)
+{
+	SDL_SetTextureColorMod(m_texture, r, g, b);
+}
+
 int Texture::getWidth()
 {
 	return m_texWidth;

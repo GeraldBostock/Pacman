@@ -59,3 +59,23 @@ void BaseEntity::draw(SDL_Renderer* renderer)
 
 	if (m_currentAnimFrame / m_animFrameNum >= m_animFrameNum) m_currentAnimFrame = 0;
 }
+
+int BaseEntity::getPosX()
+{
+	return m_posX;
+}
+
+int BaseEntity::getPosY()
+{
+	return m_posY;
+}
+
+int BaseEntity::getSpriteWidth()
+{
+	return m_spriteWidth;
+}
+
+int BaseEntity::getSpriteHeight()
+{
+	return m_spriteHeight;
+}
