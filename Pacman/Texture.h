@@ -20,11 +20,17 @@ public:
 	int getHeight();
 	float getScale();
 
+	int getOrigWidth();
+	int getOrigHeight();
+
 private:
 	SDL_Texture* m_texture;
 	
 	int m_texWidth;
 	int m_texHeight;
+
+	int m_originalWidth;
+	int m_originalHeight;
 
 	float m_scale;
 };

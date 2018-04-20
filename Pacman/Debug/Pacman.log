@@ -1,3 +1,4 @@
 ﻿  Board.cpp
+c:\users\doga\documents\visual studio 2017\projects\pacman\pacman\board.cpp(120): warning C4018: '<': signed/unsigned mismatch
   Pacman.vcxproj -> C:\Users\doga\documents\visual studio 2017\Projects\Pacman\Debug\Pacman.exe
   Pacman.vcxproj -> C:\Users\doga\documents\visual studio 2017\Projects\Pacman\Debug\Pacman.pdb (Partial PDB)

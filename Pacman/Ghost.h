@@ -12,7 +12,7 @@ public:
 
 	void draw(SDL_Renderer* renderer);
 	void initColors(Uint32 r, Uint32 g, Uint32 b);
-	void update(int screenWidth, int screenHeight, bool canMove);
+	void update(int screenWidth, int screenHeight, bool canMove, bool willCollide);
 
 private:
 	Uint32 m_r;

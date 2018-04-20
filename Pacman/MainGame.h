@@ -12,6 +12,7 @@
 #include "Ghost.h"
 #include "Board.h"
 #include "Debug.h"
+#include "Gem.h"
 
 class MainGame
 {
@@ -37,6 +38,8 @@ private:
 	std::vector<Ghost> m_ghosts;
 
 	Pacman m_pacman;
+	Gem m_gem;
+	Gem m_wall;
 	Board m_board;
 	Debug m_debug;
 

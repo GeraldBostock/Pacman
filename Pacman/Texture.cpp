@@ -38,6 +38,9 @@ bool Texture::loadFromFile(std::string filePath, SDL_Renderer* renderer, float s
 		}
 		else
 		{
+			m_originalWidth = loadedSurface->w;
+			m_originalHeight = loadedSurface->h;
+
 			m_texWidth = loadedSurface->w * m_scale;
 			m_texHeight = loadedSurface->h * m_scale;
 		}
@@ -117,4 +120,14 @@ int Texture::getHeight()
 float Texture::getScale()
 {
 	return m_scale;
+}
+
+int Texture::getOrigWidth()
+{
+	return m_originalWidth;
+}
+
+int Texture::getOrigHeight()
+{
+	return m_originalHeight;
 }

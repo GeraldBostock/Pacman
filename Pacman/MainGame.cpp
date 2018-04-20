@@ -83,7 +83,9 @@ void MainGame::init()
 		m_ghosts.push_back(ghost);
 	}
 
-	m_pacman.init(4, 4, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
+	m_gem.init(527, 47, "gem.png", m_renderer, 1, 0.0f, 0.20f);
+	m_pacman.init(204, 204, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
+	m_wall.init(400, 400, "wall.png", m_renderer, 1, 0.0f, 0.25f);
 
 	m_board.init(m_windowWidth, m_windowHeight, m_renderer);
 	m_tileWidth = m_board.getTileWidth();
@@ -103,7 +105,7 @@ void MainGame::run()
 		{
 			if (m_e.type == SDL_QUIT) m_running = false;
 			else if (m_e.type == SDL_KEYUP && m_e.key.keysym.sym == SDLK_QUOTEDBL) m_debugMode = !m_debugMode;
-			m_pacman.handleInput(m_e, m_board.isInCenterOfTile(&m_pacman));
+			m_pacman.handleInput(m_e, m_board.canTurn(&m_pacman));
 		}
 
 		draw();
@@ -112,12 +114,14 @@ void MainGame::run()
 
 		for (int i = 0; i < ghostNum; i++)
 		{
-			m_ghosts.at(i).update(m_windowWidth, m_windowHeight, m_board.isInCenterOfTile(&m_ghosts.at(i)));
-			m_board.updateGhost(m_ghosts.at(i).getPosX(), m_ghosts.at(i).getPosY(), m_ghosts.at(i).getSpriteWidth(), m_ghosts.at(i).getSpriteHeight(), m_renderer);
+			m_ghosts.at(i).update(m_windowWidth, m_windowHeight, m_board.canTurn(&m_ghosts.at(i)), m_board.isColliding(&m_ghosts.at(i)));
+			m_board.updateGhost(&m_ghosts.at(i), m_renderer);
 		}
 
+		m_board.updateGhost(&m_gem, m_renderer);
+		m_pacman.update(m_windowWidth, m_windowHeight, m_tileWidth, m_tileHeight, m_board.canTurn(&m_pacman), m_board.isColliding(&m_pacman));
 		m_board.updatePacman(&m_pacman, m_renderer);
-		m_pacman.update(m_windowWidth, m_windowHeight, m_tileWidth, m_tileHeight, m_board.isInCenterOfTile(&m_pacman));
+		m_gem.update(SDL_GetTicks());
 	}
 }
 
@@ -133,6 +137,8 @@ void MainGame::draw()
 		m_ghosts.at(i).draw(m_renderer);
 	}
 	m_pacman.draw(m_renderer);
+	m_gem.draw(m_renderer);
+	m_wall.draw(m_renderer);
 
 	if (m_debugMode) m_debug.draw(m_renderer, m_windowWidth, m_windowHeight, m_pacman.getPosX(), m_pacman.getPosY(), m_board.getAppleCount());
 

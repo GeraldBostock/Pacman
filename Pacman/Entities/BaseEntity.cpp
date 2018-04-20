@@ -36,10 +36,10 @@ void BaseEntity::loadMedia(std::string texturePath, SDL_Renderer* renderer)
 
 	for (int i = 0; i < m_animFrameNum; i++)
 	{
-		m_clipSprites[i].x = i * 128;
+		m_clipSprites[i].x = i * m_texture.getOrigWidth() / m_animFrameNum;
 		m_clipSprites[i].y = 0;
-		m_clipSprites[i].w = 128;
-		m_clipSprites[i].h = 128;
+		m_clipSprites[i].w = m_texture.getOrigWidth() / m_animFrameNum;
+		m_clipSprites[i].h = m_texture.getOrigWidth() / m_animFrameNum;
 	}
 }
 
@@ -84,4 +84,55 @@ int BaseEntity::getSpriteHeight()
 void BaseEntity::setCanMove(bool canMove)
 {
 	m_canMove = canMove;
+}
+
+directions BaseEntity::getDirection()
+{
+	return m_direction;
+}
+
+int* BaseEntity::getNextCoordinates()
+{
+	int nextX = m_posX;
+	int nextY = m_posY;
+
+	switch (m_direction)
+	{
+	case RIGHT:
+		nextX += m_speed;
+		break;
+	case LEFT:
+		nextX -= m_speed;
+		break;
+	case DOWN:
+		nextY += m_speed;
+		break;
+	case UP:
+		nextY -= m_speed;
+		break;
+	default:
+		break;
+	}
+
+	int coords[2];
+	coords[0] = nextX;
+	coords[1] = nextY;
+
+	return coords;
+}
+
+void BaseEntity::setCurrentTile(int i, int j)
+{
+	m_currentTile[0] = i;
+	m_currentTile[1] = j;
+}
+
+int BaseEntity::getSpeed()
+{
+	return m_speed;
+}
+
+directions BaseEntity::getNextDirection()
+{
+	return m_nextDirection;
 }

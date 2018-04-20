@@ -21,8 +21,15 @@ public:
 
 	int getSpriteWidth();
 	int getSpriteHeight();
+	
+	int* getNextCoordinates();
+	int getSpeed();
+
+	directions getDirection();
+	directions getNextDirection();
 
 	void setCanMove(bool canMove);
+	void setCurrentTile(int i, int j);
 
 protected:
 	Texture m_texture;
@@ -44,7 +51,7 @@ protected:
 
 	float m_timeBetweenAnimFrames;
 
-	SDL_Rect m_hitbox;
+	int m_currentTile[2];
 	SDL_Rect* m_clipSprites;
 private:
 };

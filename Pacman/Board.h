@@ -1,9 +1,17 @@
 #pragma once
 #include <SDL.h>
 #include <stdio.h>
+#include <vector>
 
 #include "Texture.h"
 #include "Entities\Pacman.h"
+
+struct tileEntityCollision
+{
+	int posX;
+	int posY;
+	int entityType;
+};
 
 class Board
 {
@@ -14,9 +22,12 @@ public:
 	void init(int windowWidth, int windowHeight, SDL_Renderer* renderer);
 	void draw(SDL_Renderer* renderer, bool debugMode);
 	void updatePacman(Pacman* pacman, SDL_Renderer* renderer);
-	void updateGhost(int posX, int posY, int width, int height, SDL_Renderer* renderer);
+	void updateGhost(BaseEntity* ghost, SDL_Renderer* renderer);
 	void prepare();
 	bool isInCenterOfTile(BaseEntity* entity);
+	bool canMove(BaseEntity* entity);
+	bool isColliding(BaseEntity* entity);
+	bool canTurn(BaseEntity* entity);
 
 	int getAppleCount();
 
@@ -34,6 +45,9 @@ private:
 
 	int m_applesNum;
 
+	std::vector<tileEntityCollision> m_collisions;
+
 	Texture m_apple;
+	Texture m_wall;
 };
 
