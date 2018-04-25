@@ -14,17 +14,9 @@ Pacman::~Pacman()
 {
 }
 
-void Pacman::handleInput(SDL_Event e, bool canMove)
+void Pacman::update(int screenWidth, int screenHeight, bool canChangeDirection, bool isColliding)
 {
-	directions input = m_input.getInput(e);
-	if(input != OTHER) m_nextDirection = input;
-	/*if (input != OTHER && canMove) m_direction = input;
-	else if (input != OTHER && !canMove) m_nextDirection = input;*/
-}
-
-void Pacman::update(int screenWidth, int screenHeight, int tileWidth, int tileHeight, bool canMove, bool isColliding)
-{
-	if (m_nextDirection != OTHER && canMove)
+	if (m_nextDirection != OTHER && canChangeDirection)
 	{
 		m_direction = m_nextDirection;
 		m_nextDirection = OTHER;

@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <stdio.h>
 #include <vector>
+#include <memory>
 
 #include "Texture.h"
 #include "Entities\Pacman.h"
@@ -13,6 +14,13 @@ struct tileEntityCollision
 	int entityType;
 };
 
+enum Tiles
+{
+	EMPTY,
+	WALL,
+	LAST
+};
+
 class Board
 {
 public:
@@ -21,12 +29,11 @@ public:
 
 	void init(int windowWidth, int windowHeight, SDL_Renderer* renderer);
 	void draw(SDL_Renderer* renderer, bool debugMode);
-	void updatePacman(Pacman* pacman, SDL_Renderer* renderer);
-	void updateGhost(BaseEntity* ghost, SDL_Renderer* renderer);
+	void updatePacman(BaseEntity* pacman);
+	void updateGhost(BaseEntity* ghost);
 	void prepare();
 	bool isInCenterOfTile(BaseEntity* entity);
-	bool canMove(BaseEntity* entity);
-	bool isColliding(BaseEntity* entity);
+	bool canMove(BaseEntity* entity, int screenWidth, int screenHeight);
 	bool canTurn(BaseEntity* entity);
 
 	int getAppleCount();
@@ -35,7 +42,7 @@ public:
 	int getTileHeight();
 
 private:
-	int m_board[18][32];
+	Tiles m_board[18][32];
 	bool m_apples[18][32];
 	int m_tileWidth = 40;
 	int m_tileHeight = 40;

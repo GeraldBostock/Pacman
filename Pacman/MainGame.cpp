@@ -8,7 +8,7 @@ MainGame::MainGame()
 	m_windowWidth = 1280;
 	m_windowHeight = 780;
 	m_debugMode = false;
-	ghostNum = 20;
+	m_entityNum = 20;
 }
 
 MainGame::MainGame(std::string title, int width, int height)
@@ -17,7 +17,7 @@ MainGame::MainGame(std::string title, int width, int height)
 	m_windowWidth = width;
 	m_windowHeight = height;
 	m_debugMode = false;
-	ghostNum = 20;
+	m_entityNum = 20;
 }
 
 
@@ -67,9 +67,14 @@ void MainGame::init()
 		}
 	}
 
-	for (int i = 0; i < ghostNum; i++)
+	m_pacman = new Pacman();
+	m_pacman->init(204, 204, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
+	m_entities.push_back(m_pacman);
+
+	for (int i = 0; i < m_entityNum - 1; i++)
 	{
-		Ghost ghost;
+		Ghost *ghost;
+		ghost = new Ghost();
 		int x = 4;
 		int y = 4;
 		int offsetX = rand() % 30;
@@ -78,14 +83,10 @@ void MainGame::init()
 		x += offsetX * 40;
 		y += offsetY * 40;
 
-		ghost.init(x, y, "ghost2.png", m_renderer, 4, 0.03f, 0.25f);
-		ghost.initColors(rand() % 255, rand() % 255, rand() % 255);
-		m_ghosts.push_back(ghost);
+		ghost->init(x, y, "ghost2.png", m_renderer, 4, 0.03f, 0.25f);
+		ghost->initColors(rand() % 255, rand() % 255, rand() % 255);
+		m_entities.push_back(ghost);
 	}
-
-	m_gem.init(527, 47, "gem.png", m_renderer, 1, 0.0f, 0.20f);
-	m_pacman.init(204, 204, "pacman.png", m_renderer, 4, 0.005f, 0.25f);
-	m_wall.init(400, 400, "wall.png", m_renderer, 1, 0.0f, 0.25f);
 
 	m_board.init(m_windowWidth, m_windowHeight, m_renderer);
 	m_tileWidth = m_board.getTileWidth();
@@ -105,23 +106,29 @@ void MainGame::run()
 		{
 			if (m_e.type == SDL_QUIT) m_running = false;
 			else if (m_e.type == SDL_KEYUP && m_e.key.keysym.sym == SDLK_QUOTEDBL) m_debugMode = !m_debugMode;
-			m_pacman.handleInput(m_e, m_board.canTurn(&m_pacman));
+
+			m_entities.at(0)->handleInput(m_e);
+			//m_pacman.handleInput(m_e);
 		}
+
+		for (int i = 1; i < m_entityNum; i++) m_entities.at(i)->handleInput(m_e);
 
 		draw();
 
 		m_board.prepare();
 
-		for (int i = 0; i < ghostNum; i++)
+		for (int i = 0; i < m_entityNum; i++)
 		{
-			m_ghosts.at(i).update(m_windowWidth, m_windowHeight, m_board.canTurn(&m_ghosts.at(i)), m_board.isColliding(&m_ghosts.at(i)));
-			m_board.updateGhost(&m_ghosts.at(i), m_renderer);
+			m_entities.at(i)->update(m_windowWidth, m_windowHeight, m_board.canTurn(m_entities.at(i)), m_board.canMove(m_entities.at(i), m_windowWidth, m_windowHeight));
+			if (i == 0)
+			{
+				m_board.updatePacman(m_entities.at(i));
+			}
+			else m_board.updateGhost(m_entities.at(i));
 		}
 
-		m_board.updateGhost(&m_gem, m_renderer);
-		m_pacman.update(m_windowWidth, m_windowHeight, m_tileWidth, m_tileHeight, m_board.canTurn(&m_pacman), m_board.isColliding(&m_pacman));
-		m_board.updatePacman(&m_pacman, m_renderer);
-		m_gem.update(SDL_GetTicks());
+		/*m_pacman.update(m_windowWidth, m_windowHeight, m_board.canTurn(&m_pacman), m_board.isColliding(&m_pacman));
+		m_board.updatePacman(&m_pacman, m_renderer);*/
 	}
 }
 
@@ -132,15 +139,13 @@ void MainGame::draw()
 
 	//Rendering goes here
 	m_board.draw(m_renderer, m_debugMode);
-	for (int i = 0; i < ghostNum; i++)
-	{
-		m_ghosts.at(i).draw(m_renderer);
-	}
-	m_pacman.draw(m_renderer);
-	m_gem.draw(m_renderer);
-	m_wall.draw(m_renderer);
 
-	if (m_debugMode) m_debug.draw(m_renderer, m_windowWidth, m_windowHeight, m_pacman.getPosX(), m_pacman.getPosY(), m_board.getAppleCount());
+	for (int i = 0; i < m_entityNum; i++)
+	{
+		m_entities.at(i)->draw(m_renderer);
+	}
+
+	if (m_debugMode) m_debug.draw(m_renderer, m_windowWidth, m_windowHeight, m_pacman->getPosX(), m_pacman->getPosY(), m_board.getAppleCount());
 
 	SDL_RenderPresent(m_renderer);
 }

@@ -24,10 +24,10 @@ void Board::init(int windowWidth, int windowHeight, SDL_Renderer* renderer)
 		{
 			int hello = rand() % 7;
 
-			if( hello != 0 ) m_board[j][i] = 0;
-			else m_board[j][i] = 1;
+			if( hello != 0 ) m_board[j][i] = EMPTY;
+			else m_board[j][i] = WALL;
 
-			if(m_board[j][i] == 1) m_apples[j][i] = false;
+			if(m_board[j][i] == WALL) m_apples[j][i] = false;
 			else m_apples[j][i] = true;
 		}
 	}
@@ -47,7 +47,7 @@ void Board::prepare()
 	}
 }
 
-void Board::updatePacman(Pacman* pacman, SDL_Renderer* renderer)
+void Board::updatePacman(BaseEntity* pacman)
 {
 	int posX = pacman->getPosX();
 	int posY = pacman->getPosY();
@@ -86,7 +86,7 @@ void Board::updatePacman(Pacman* pacman, SDL_Renderer* renderer)
 	}
 }
 
-void Board::updateGhost(BaseEntity* ghost, SDL_Renderer* renderer)
+void Board::updateGhost(BaseEntity* ghost)
 {
 	int posX = ghost->getPosX();
 	int posY = ghost->getPosY();
@@ -151,7 +151,7 @@ void Board::draw(SDL_Renderer* renderer, bool debugMode)
 				SDL_RenderDrawRect(renderer, &rect);
 			}
 
-			if (m_board[j][i] == 1)
+			if (m_board[j][i] == WALL)
 			{
 				m_wall.draw(i * m_tileWidth, j * m_tileHeight, renderer, NULL, 0);
 			}
@@ -163,61 +163,57 @@ void Board::draw(SDL_Renderer* renderer, bool debugMode)
 	}
 }
 
-bool Board::canMove(BaseEntity* entity)
+bool Board::canMove(BaseEntity* entity, int screenWidth, int screenHeight)
 {
-	int entityX = entity->getPosX();
-	int entityY = entity->getPosY();
-	int entityWidth = entity->getSpriteWidth();
-	int entityHeight = entity->getSpriteHeight();
-	int nextX = entity->getNextCoordinates()[0];
-	int nextY = entity->getNextCoordinates()[1];
-	directions direction = entity->getDirection();
-
-	int offsetX = 0;
-	int offsetY = 0;
-
-	switch (direction)
+	if (!isInCenterOfTile(entity)) return false;
+	else
 	{
-	case RIGHT:
-		offsetX = 1;
-		offsetY = 0;
-		break;
-	case LEFT:
-		offsetX = -1;
-		offsetY = 0;
-		break;
-	case UP:
-		offsetX = 0;
-		offsetY = -1;
-		break;
-	case DOWN:
-		offsetX = 0;
-		offsetY = 1;
-		break;
-	default:
-		break;
-	}
+		int entityX = entity->getPosX();
+		int entityY = entity->getPosY();
+		int entityWidth = entity->getSpriteWidth();
+		int entityHeight = entity->getSpriteHeight();
+		directions direction = entity->getDirection();
 
-	for (int i = 0; i < m_tileNumX; i++)
-	{
-		for (int j = 0; j < m_tileNumY; j++)
+		for (int i = 0; i < m_tileNumX; i++)
 		{
-			SDL_Rect boardRect = { i * m_tileWidth, j * m_tileHeight, m_tileWidth, m_tileHeight };
-			SDL_Rect entityRect = { nextX + offsetX, nextY + offsetY, entityWidth, entityHeight };
-			SDL_Rect resultRect;
+			for (int j = 0; j < m_tileNumY; j++)
+			{
+				SDL_Rect boardRect = { i * m_tileWidth, j * m_tileHeight, m_tileWidth, m_tileHeight };
+				SDL_Rect entityRect = { entityX, entityY, entityWidth, entityHeight };
+				SDL_Rect resultRect;
 
-			SDL_bool result = SDL_IntersectRect(&boardRect, &entityRect, &resultRect);
-
-			if (result == SDL_TRUE && m_board[j][i] == 1) return false;
+				SDL_bool result = SDL_IntersectRect(&boardRect, &entityRect, &resultRect);
+				if (result == SDL_TRUE)
+				{
+					if (entityX == i * m_tileWidth + 4 && entityY == j * m_tileHeight + 4)
+					{
+						switch (direction)
+						{
+						case RIGHT:
+							if (m_board[j][(i + 1 + m_tileNumX) % m_tileNumX] != WALL) return false;
+							break;
+						case LEFT:
+							if (m_board[j][(i - 1 + m_tileNumX) % m_tileNumX] != WALL) return false;
+							break;
+						case DOWN:
+							if (m_board[(j + 1 + m_tileNumY) % m_tileNumY][i] != WALL) return false;
+							break;
+						case UP:
+							if (m_board[(j - 1 + m_tileNumY) % m_tileNumY][i] != WALL) return false;
+							break;
+						default:
+							return true;
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 
 	return true;
-}
 
-bool Board::isColliding(BaseEntity* entity)
-{
-	int entityX = entity->getPosX();
+	/*int entityX = entity->getPosX();
 	int entityY = entity->getPosY();
 	int entityWidth = entity->getSpriteWidth();
 	int entityHeight = entity->getSpriteHeight();
@@ -227,20 +223,23 @@ bool Board::isColliding(BaseEntity* entity)
 	switch (direction)
 	{
 	case RIGHT:
-		entityX += speed + 2;
+		entityX = (entityX + (speed + 2) + screenWidth) % screenWidth;
 		break;
 	case LEFT:
-		entityX -= speed + 2;
+		entityX = (entityX - (speed + 2) + screenWidth) % screenWidth;
 		break;
 	case UP:
-		entityY -= speed + 2;
+		entityY = (entityY - (speed + 2) + screenHeight) % screenHeight;
 		break;
 	case DOWN:
-		entityY += speed + 2;
+		entityY = (entityY + (speed + 2) + screenHeight) % screenHeight;
 		break;
 	default:
 		break;
 	}
+
+	if (entityX + entityWidth > screenWidth) entityX = 0;
+	if (entityY + entityHeight > screenHeight) entityY = 0;
 
 	for (int i = 0; i < m_tileNumX; i++)
 	{
@@ -255,7 +254,7 @@ bool Board::isColliding(BaseEntity* entity)
 		}
 	}
 
-	return false;
+	return false;*/
 }
 
 bool Board::canTurn(BaseEntity* entity)
@@ -282,16 +281,16 @@ bool Board::canTurn(BaseEntity* entity)
 					switch (nextDirection)
 					{
 					case RIGHT:
-						if (m_board[j][i + 1] != 1) return true;
+						if (m_board[j][(i + 1 + m_tileNumX) % m_tileNumX] != WALL) return true;
 						break;
 					case LEFT:
-						if (m_board[j][i - 1] != 1) return true;
+						if (m_board[j][(i - 1 + m_tileNumX) % m_tileNumX] != WALL) return true;
 						break;
 					case DOWN:
-						if (m_board[j + 1][i] != 1) return true;
+						if (m_board[(j + 1 + m_tileNumY) % m_tileNumY][i] != WALL) return true;
 						break;
 					case UP:
-						if (m_board[j - 1][i] != 1) return true;
+						if (m_board[(j - 1 + m_tileNumY) % m_tileNumY][i] != WALL) return true;
 						break;
 					default:
 						return true;

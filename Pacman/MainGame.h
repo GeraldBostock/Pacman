@@ -9,7 +9,7 @@
 #include <SDL_image.h>
 
 #include "Entities\Pacman.h"
-#include "Ghost.h"
+#include "Entities\Ghost.h"
 #include "Board.h"
 #include "Debug.h"
 #include "Gem.h"
@@ -31,15 +31,13 @@ private:
 	int m_windowHeight;
 	bool m_running;
 	bool m_debugMode;
-	int ghostNum;
+	int m_entityNum;
 	int m_tileWidth;
 	int m_tileHeight;
 
-	std::vector<Ghost> m_ghosts;
+	std::vector<BaseEntity*> m_entities;
 
-	Pacman m_pacman;
-	Gem m_gem;
-	Gem m_wall;
+	Pacman* m_pacman;
 	Board m_board;
 	Debug m_debug;
 

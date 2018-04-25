@@ -2,7 +2,7 @@
 #include <SDL_ttf.h>
 #include <stdio.h>
 
-#include "Ghost.h"
+#include "Entities\Ghost.h"
 #include "Texture.h"
 
 class Debug

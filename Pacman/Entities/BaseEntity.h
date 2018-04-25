@@ -4,8 +4,9 @@
 #include "..\Helper\Timer.h"
 #include "..\Texture.h"
 #include "..\Input.h"
+#include "IEntity.h"
 
-class BaseEntity
+class BaseEntity : public IEntity
 {
 public:
 	BaseEntity();
@@ -13,8 +14,9 @@ public:
 
 	void init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float m_scale);
 	void loadMedia(std::string texturePath, SDL_Renderer* renderer);
-	void draw(SDL_Renderer* renderer);
-	void update();
+	virtual void handleInput(SDL_Event e);
+	virtual void update(int screenWidth, int screenHeight, bool canChangeDirection, bool willCollide);
+	virtual void draw(SDL_Renderer* renderer);
 
 	int getPosX();
 	int getPosY();

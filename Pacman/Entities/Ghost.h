@@ -2,7 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 
-#include "Entities\BaseEntity.h"
+#include "BaseEntity.h"
 
 class Ghost : public BaseEntity
 {
@@ -10,9 +10,9 @@ public:
 	Ghost();
 	~Ghost();
 
-	void draw(SDL_Renderer* renderer);
 	void initColors(Uint32 r, Uint32 g, Uint32 b);
-	void update(int screenWidth, int screenHeight, bool canMove, bool willCollide);
+	void handleInput(SDL_Event e) override;
+	void draw(SDL_Renderer* renderer) override;
 
 private:
 	Uint32 m_r;

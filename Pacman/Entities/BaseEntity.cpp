@@ -43,8 +43,45 @@ void BaseEntity::loadMedia(std::string texturePath, SDL_Renderer* renderer)
 	}
 }
 
-void BaseEntity::update()
+void BaseEntity::handleInput(SDL_Event e)
 {
+	directions input = m_input.getInput(e);
+	if (input != OTHER) m_nextDirection = input;
+}
+
+void BaseEntity::update(int screenWidth, int screenHeight, bool canChangeDirection, bool willCollide)
+{
+	if (m_nextDirection != OTHER && canChangeDirection)
+	{
+		m_direction = m_nextDirection;
+		m_nextDirection = OTHER;
+	}
+
+	if (!willCollide)
+	{
+		switch (m_direction)
+		{
+		case RIGHT:
+			m_posX += m_speed;
+			break;
+		case LEFT:
+			m_posX -= m_speed;
+			break;
+		case DOWN:
+			m_posY += m_speed;
+			break;
+		case UP:
+			m_posY -= m_speed;
+			break;
+		default:
+			break;
+		}
+	}
+
+	if (m_posX + m_spriteWidth < 0) m_posX = screenWidth;
+	else if (m_posX > screenWidth) m_posX = -m_spriteWidth;
+	else if (m_posY + 64 < 0) m_posY = screenHeight;
+	else if (m_posY > screenHeight) m_posY = -m_spriteHeight;
 }
 
 void BaseEntity::draw(SDL_Renderer* renderer)
