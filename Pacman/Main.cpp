@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-	MainGame mainGame("Pacman", 1280, 720);
+	MainGame mainGame("Pacman", 1540, 760, 1320, 760);
 	mainGame.init();
 	mainGame.run();
 

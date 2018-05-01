@@ -12,7 +12,7 @@ public:
 	~Debug();
 
 	void init(SDL_Renderer* renderer, int windowWidth, int windowHeight);
-	void draw(SDL_Renderer* renderer, int windowWidth, int windowHeight, int posX, int posY, int appleNum);
+	void draw(SDL_Renderer* renderer, int windowWidth, int windowHeight, int posX, int posY, int appleNum, float fps);
 
 private:
 	Texture m_posXLabel;
@@ -23,6 +23,9 @@ private:
 
 	Texture m_appleCountLabel;
 	Texture m_appleCount;
+
+	Texture m_fpsLabel;
+	Texture m_fpsValue;
 
 	SDL_Texture* m_blendedRect;
 	SDL_Color m_textColor;

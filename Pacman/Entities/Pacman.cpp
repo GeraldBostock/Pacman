@@ -4,9 +4,10 @@
 
 Pacman::Pacman()
 {
-	m_direction = RIGHT;
+	m_direction = OTHER;
 	m_nextDirection = OTHER;
 	m_rotationAngle = 0.0;
+	m_currentAnimation = &m_moveAnimation;
 }
 
 
@@ -14,7 +15,22 @@ Pacman::~Pacman()
 {
 }
 
-void Pacman::update(int screenWidth, int screenHeight, bool canChangeDirection, bool isColliding)
+void Pacman::loadDeathAnimation(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
+{
+	m_deathAnimation.init(texturePath, animFrames, timeBetweenFrames, renderer, scale);
+}
+
+void Pacman::loadPowerUpAnim(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
+{
+	m_poweredUp.init(texturePath, animFrames, timeBetweenFrames, renderer, scale);
+}
+
+void Pacman::loadBlinkAnim(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
+{
+	m_blinkAnim.init(texturePath, animFrames, timeBetweenFrames, renderer, scale);
+}
+
+void Pacman::update(int screenWidth, int screenHeight, bool canChangeDirection, bool canMove)
 {
 	if (m_nextDirection != OTHER && canChangeDirection)
 	{
@@ -22,7 +38,7 @@ void Pacman::update(int screenWidth, int screenHeight, bool canChangeDirection, 
 		m_nextDirection = OTHER;
 	}
 
-	if (!isColliding)
+	if (!canMove)
 	{
 		switch (m_direction)
 		{
@@ -51,4 +67,47 @@ void Pacman::update(int screenWidth, int screenHeight, bool canChangeDirection, 
 	else if (m_posX > screenWidth) m_posX = -m_spriteWidth;
 	else if (m_posY + 64 < 0) m_posY = screenHeight;
 	else if (m_posY > screenHeight) m_posY = -m_spriteHeight;
+}
+
+void Pacman::draw(SDL_Renderer* renderer)
+{
+	m_currentAnimation->draw(renderer, m_posX, m_posY, m_rotation);
+}
+
+void Pacman::die()
+{
+	m_currentAnimation = &m_deathAnimation;
+	m_rotation = 0;
+}
+
+void Pacman::revive()
+{
+	m_currentAnimation = &m_moveAnimation;
+	m_direction = OTHER;
+}
+
+bool Pacman::isAnimationOver()
+{
+	return m_currentAnimation->isAnimationOver();
+}
+
+void Pacman::powerUp()
+{
+	m_currentAnimation = &m_poweredUp;
+}
+
+void Pacman::powerUpOver()
+{
+	m_currentAnimation = &m_moveAnimation;
+}
+
+void Pacman::blink()
+{
+	m_currentAnimation = &m_blinkAnim;
+}
+
+void Pacman::free()
+{
+	m_moveAnimation.free();
+	m_deathAnimation.free();
 }

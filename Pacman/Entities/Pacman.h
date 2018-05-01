@@ -11,9 +11,27 @@ public:
 	Pacman();
 	~Pacman();
 
-	void update(int screenWidth, int screenHeight, bool canChangeDirection, bool isColliding) override;
+	void loadDeathAnimation(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale);
+	void loadPowerUpAnim(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale);
+	void loadBlinkAnim(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale);
+
+	void update(int screenWidth, int screenHeight, bool canChangeDirection, bool canMove) override;
+	void draw(SDL_Renderer* renderer) override;
+	void free() override;
+
+	void die() override;
+	void revive();
+	void powerUp();
+	void powerUpOver() override;
+	void blink() override;
+	bool isAnimationOver();
 
 private:
+	EntityAnimation m_deathAnimation;
+	EntityAnimation m_poweredUp;
+	EntityAnimation m_blinkAnim;
+
+	EntityAnimation* m_currentAnimation;
 	float m_rotationAngle;
 };
 

@@ -14,33 +14,18 @@ BaseEntity::~BaseEntity()
 {
 }
 
-void BaseEntity::init(int x, int y, std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
+void BaseEntity::init(int x, int y)
 {
 	m_posX = x;
 	m_posY = y;
-	m_animFrameNum = animFrames;
-	m_currentAnimFrame = 0;
-	m_timeBetweenAnimFrames = timeBetweenFrames;
-	m_scale = scale;
-	loadMedia(texturePath, renderer);
-	m_frameTimer.start();
 }
 
-void BaseEntity::loadMedia(std::string texturePath, SDL_Renderer* renderer)
+
+void BaseEntity::loadAnim(std::string texturePath, SDL_Renderer* renderer, int animFrames, float timeBetweenFrames, float scale)
 {
-	m_texture.loadFromFile(texturePath, renderer, m_scale);
-	m_spriteWidth = m_texture.getWidth() / m_animFrameNum;
-	m_spriteHeight = m_texture.getHeight();
-
-	m_clipSprites = new SDL_Rect[m_animFrameNum];
-
-	for (int i = 0; i < m_animFrameNum; i++)
-	{
-		m_clipSprites[i].x = i * m_texture.getOrigWidth() / m_animFrameNum;
-		m_clipSprites[i].y = 0;
-		m_clipSprites[i].w = m_texture.getOrigWidth() / m_animFrameNum;
-		m_clipSprites[i].h = m_texture.getOrigWidth() / m_animFrameNum;
-	}
+	m_moveAnimation.init(texturePath, animFrames, timeBetweenFrames, renderer, scale);
+	m_spriteWidth = m_moveAnimation.getWidth();
+	m_spriteHeight = m_moveAnimation.getHeight();
 }
 
 void BaseEntity::handleInput(SDL_Event e)
@@ -86,16 +71,7 @@ void BaseEntity::update(int screenWidth, int screenHeight, bool canChangeDirecti
 
 void BaseEntity::draw(SDL_Renderer* renderer)
 {
-	SDL_Rect* currentClip = &m_clipSprites[m_currentAnimFrame / m_animFrameNum];
-	m_texture.draw(m_posX, m_posY, renderer, currentClip, m_rotation);
-
-	if (m_frameTimer.getTicks() / 1000.f > m_timeBetweenAnimFrames)
-	{
-		m_currentAnimFrame++;
-		m_frameTimer.start();
-	}
-
-	if (m_currentAnimFrame / m_animFrameNum >= m_animFrameNum) m_currentAnimFrame = 0;
+	m_moveAnimation.draw(renderer, m_posX, m_posY, 0);
 }
 
 int BaseEntity::getPosX()
@@ -172,4 +148,29 @@ int BaseEntity::getSpeed()
 directions BaseEntity::getNextDirection()
 {
 	return m_nextDirection;
+}
+
+void BaseEntity::setCollisionState(bool isColliding)
+{
+	m_isColliding = isColliding;
+}
+
+void BaseEntity::setPosX(int posX)
+{
+	m_posX = posX;
+}
+
+void BaseEntity::setPosY(int posY)
+{
+	m_posY = posY;
+}
+
+void BaseEntity::free()
+{
+	m_moveAnimation.free();
+}
+
+EntityState BaseEntity::getState()
+{
+	return ALIVE;
 }
